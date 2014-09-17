@@ -33,7 +33,7 @@ chars 203223159
 words 35668184
 lines 1010243
 
-Perusing the content of the files we can observe that twitters present the biggest challenge due to the jargon, abbreviations and non english speelling used in this kind of communication.
+Perusing the content of the files we can observe that twitters present the biggest challenge due to the jargon, abbreviations and incorrect spelling used in this kind of communication.
 Also, as shown in the summary, the mean length of the tweet lines is around 15 words, which means short sentences and therefore more difficult to predict words based on line context.
 
 
@@ -56,17 +56,58 @@ blog<-readLines("./final/en_US/en_US.blogs.txt")
 ### Analysing the data
 
 As we are dealing with natural language processing (NLP) a good way to start is with the tokenization of the data (i.e. we'll break the text up into words in this case).
-In our research we found that the tm package is a good option for this purpose, but given the size of the file we are working with, we'll work on a sample of about 10% of the lines.
+In our research we found that the tm and RWeka packages are a good option for this purpose, but given the size of the file we are working with, we'll work on a sample of about 10% of the lines.
 
+```{r eval=FALSE}
+
+b1<-sample(blog,90000)
+writeLines(b1,"b1/b1.txt")
+
+blog.vector <- VectorSource(b1)
+blog.corpus <- Corpus(blog.vector)
+
+blog.corpus <- tm_map(blog.corpus, tolower)
+blog.corpus <- tm_map(blog.corpus, removeNumbers)
+blog.corpus <- tm_map(blog.corpus, removePunctuation)
+blog.corpus <- tm_map(blog.corpus, PlainTextDocument)
+
+dtm<-DocumentTermMatrix(blog.corpus)
+freq<-sort(colSums(as.matrix(dtm)),decreasing=TRUE)
+
+wf <- data.frame(word=names(freq), freq=freq)
+
+
+library(ggplot2)
+p <- ggplot(subset(wf, freq>1000), aes(word, freq))
+p <- p + geom_bar(stat="identity")
+p <- p + theme(axis.text.x=element_text(angle=45, hjust=1))
+p
+
+# remove stop words
+blog.corpus <- tm_map(blog.corpus, removeWords, stopwords("english"))
+
+dtm<-DocumentTermMatrix(blog.corpus)
+freq<-sort(colSums(as.matrix(dtm)),decreasing=TRUE)
+
+wf <- data.frame(word=names(freq), freq=freq)
+
+p <- ggplot(subset(wf, freq>500), aes(word, freq))
+p <- p + geom_bar(stat="identity")
+p <- p + theme(axis.text.x=element_text(angle=45, hjust=1))
+p
+
+```
+
+Note: A similar study should be done by two and three-word groups (2-grams and 3-grams) using Rweka tokenizer as it will be instrumental in the design of the prediction model. 
 
 # Findings
 
-This exploratory analysis provide some very useful findings especially regarding the challenges we'll face when building our prediction model:
+This exploratory analysis provides some very useful findings especially regarding the challenges we'll face when building our prediction model:
 
-- Due to the amount of data available, we may need to work on data samples to minimise the performance issues.
-- Tweets may not be useful-at least, initially- as they will add too much noise to the corpora.
-
-
+* Due to the amount of data available, we may need to work on data samples to minimise the performance issues.
+* Tweets may not be useful-at least, initially- as they will add too much noise to the corpora.
+* We need to use stop words for predictions but for correlation we may need to remove them.
+ 
 
 
 
