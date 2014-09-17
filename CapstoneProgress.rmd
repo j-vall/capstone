@@ -1,0 +1,74 @@
+---
+output: word_document
+---
+Predictive text project
+======================================================================
+
+# Synopsis
+
+The objective of this project is to build an algorithm capable of predicting the next word in a sentence given one or more previous words. This algorithm is meant to be used in text messages, for instance.
+To make the analysis possible, we have been supplied with a copora consisting of three sources of text: blogs, news and tweets. 
+We have received similar sets in 4 different languages. For the purpose of this exploratory analysis we'll concentrate on the English corpora.
+
+### Initial Analysis.
+
+The data has been downloaded from 
+
+https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip
+
+Using Notepad++ we get the basic summary of the data:
+
+blog.txt
+chars 206824505
+words 37896970
+lines 899289
+
+twitter.txt
+chars 162385042
+words 30375465
+lines 2360149
+
+news.txt
+chars 203223159
+words 35668184
+lines 1010243
+
+Perusing the content of the files we can observe that twitters present the biggest challenge due to the jargon, abbreviations and non english speelling used in this kind of communication.
+Also, as shown in the summary, the mean length of the tweet lines is around 15 words, which means short sentences and therefore more difficult to predict words based on line context.
+
+
+# Data Processing
+
+### Download and extract:
+
+```{r eval=FALSE}
+download.file("https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip",temp)
+
+unzip(zipfile="files.zip",exdir="./temp")
+```
+
+### read data
+
+```{r eval=FALSE}
+blog<-readLines("./final/en_US/en_US.blogs.txt")
+```
+
+### Analysing the data
+
+As we are dealing with natural language processing (NLP) a good way to start is with the tokenization of the data (i.e. we'll break the text up into words in this case).
+In our research we found that the tm package is a good option for this purpose, but given the size of the file we are working with, we'll work on a sample of about 10% of the lines.
+
+
+# Findings
+
+This exploratory analysis provide some very useful findings especially regarding the challenges we'll face when building our prediction model:
+
+- Due to the amount of data available, we may need to work on data samples to minimise the performance issues.
+- Tweets may not be useful-at least, initially- as they will add too much noise to the corpora.
+
+
+
+
+
+
+
